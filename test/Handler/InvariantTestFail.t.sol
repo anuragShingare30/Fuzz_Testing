@@ -12,10 +12,10 @@ import {IERC20} from "lib/openzeppelin-contracts/contracts/interfaces/IERC20.sol
 
 
 /// @dev without using handler, our statefull test will fail
-/// @dev Fuzz test will assumes random user, token address which will definetly fails
+/// @dev Fuzz test will assumes random user, random token address which will revert
 /// @dev So to control the randomness, we will use handler to specify our fuzz test to test within this bounded space
 contract InvariantTestFail is StdInvariant, Test {
-    StatefulFuzzHandler statefulFuzzHandler;
+    StatefulFuzzHandler statefulFuzzHandler;    
     YieldERC20 yeildERC20;
     MockUSDC mockUSDC;
     IERC20[] public supportedTokens;

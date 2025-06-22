@@ -23,7 +23,7 @@ contract InvariantBreakHardTest is StdInvariant, Test {
 
     function setUp() public {
         vm.startPrank(user);
-        // Give our user 1M tokens each
+        // Give our user 1Mock tokens each
         yeildERC20 = new YieldERC20();
         startingAmount = yeildERC20.INITIAL_SUPPLY();
         mockUSDC = new MockUSDC();

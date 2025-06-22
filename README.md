@@ -138,13 +138,54 @@
     - It is an simple contract that deposit and withdraws token
     - `Invarient:` Users must always be able to withdraw the exact balance amount out.
 
-3. `InvariantTestFail.t.sol`
+2. `InvariantTestFail.t.sol`
     - Upon fuzz testing with random data, the fuzzer will test the function with `random token addresses` and `random user`
     - Which will definetly break the invarient as `token` is not verified and enough balance is not provided to user
 
-4. `Handler.t.sol`
+3. `Handler.t.sol`
     - To handle the randomness, we will instruct the fuzzer to only call the `deposit` and `withdraw` functions with a `specific token address and user`
 
-5. `InvariantTest.t.sol`
+    ```solidity
+    contract Handler is Test {
+        MainContract public mainContract;
+        constructor(MainContract _mainContract){
+            mainContract = _mainContract;
+        }
+        function firstFunction() public {
+            // ..logic
+        }
+        function secondFunction() public {
+            // ..logic
+        }
+    }
+    ```
+
+4. `InvariantTest.t.sol`
     - We will provide `targetContract(address(handler))` and `targetSelector(FuzzSelector({addr: address(handler), selector:selector}))` to the fuzzer
     - This will instruct the fuzzer to only call `deposit and withdraw` functions with `specific token address and users`
+
+    ```solidity
+    contract InvariantTest is StdInvariant,Test{
+        Handler public handler;
+        MainContract public mainContract;
+        address user;
+
+        function setUp() public {
+            vm.startPrank(user);
+            mainContract = new MainContract();
+            vm.stopPrank();
+
+            handler = new Handler(mainContract);
+            bytes4[] memory selectors = new bytes4[](2);
+            selectors[0] = handler.firstFunction.selector;
+            selectors[1] = handler.secondFunction.selector;
+
+            targetSelector(FuzzSelector({addr: address(handler), selectors: selectors}));
+            targetContract(address(handler));
+        }
+
+        function statefulFuzz_testInvariant() public {
+            // test logic
+        }
+    }
+    ```
